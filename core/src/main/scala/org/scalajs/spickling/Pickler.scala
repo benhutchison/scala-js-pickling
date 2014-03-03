@@ -3,39 +3,39 @@ package org.scalajs.spickling
 trait Pickler[A] {
   type Picklee = A
 
-  def pickle[P](obj: Picklee)(implicit registry: PicklerRegistry,
-      builder: PBuilder[P]): P
+  def pickle[P](obj: Picklee)(implicit builder: PBuilder[P]): P
 }
 
 object Pickler extends PicklerMaterializers {
+
+  implicit class RichPicklee[A](value: A)(implicit p: Pickler[A]) {
+
+    def pickle[P](implicit builder: PBuilder[P]): P = p.pickle(value)
+
+  }
+
   implicit object BooleanPickler extends Pickler[Boolean] {
-    def pickle[P](x: Boolean)(implicit registry: PicklerRegistry,
-        builder: PBuilder[P]): P = builder.makeBoolean(x)
+    def pickle[P](x: Boolean)(implicit builder: PBuilder[P]): P = builder.makeBoolean(x)
   }
 
   implicit object CharPickler extends Pickler[Char] {
-    def pickle[P](x: Char)(implicit registry: PicklerRegistry,
-        builder: PBuilder[P]): P = builder.makeString(x.toString)
+    def pickle[P](x: Char)(implicit builder: PBuilder[P]): P = builder.makeString(x.toString)
   }
 
   implicit object BytePickler extends Pickler[Byte] {
-    def pickle[P](x: Byte)(implicit registry: PicklerRegistry,
-        builder: PBuilder[P]): P = builder.makeNumber(x)
+    def pickle[P](x: Byte)(implicit builder: PBuilder[P]): P = builder.makeNumber(x)
   }
 
   implicit object ShortPickler extends Pickler[Short] {
-    def pickle[P](x: Short)(implicit registry: PicklerRegistry,
-        builder: PBuilder[P]): P = builder.makeNumber(x)
+    def pickle[P](x: Short)(implicit builder: PBuilder[P]): P = builder.makeNumber(x)
   }
 
   implicit object IntPickler extends Pickler[Int] {
-    def pickle[P](x: Int)(implicit registry: PicklerRegistry,
-        builder: PBuilder[P]): P = builder.makeNumber(x)
+    def pickle[P](x: Int)(implicit builder: PBuilder[P]): P = builder.makeNumber(x)
   }
 
   implicit object LongPickler extends Pickler[Long] {
-    def pickle[P](x: Long)(implicit registry: PicklerRegistry,
-        builder: PBuilder[P]): P = {
+    def pickle[P](x: Long)(implicit builder: PBuilder[P]): P = {
       builder.makeObject(
           ("l", builder.makeNumber(x.toInt & 0x3fffff)),
           ("m", builder.makeNumber((x >> 22).toInt & 0x3fffff)),
@@ -44,17 +44,14 @@ object Pickler extends PicklerMaterializers {
   }
 
   implicit object FloatPickler extends Pickler[Float] {
-    def pickle[P](x: Float)(implicit registry: PicklerRegistry,
-        builder: PBuilder[P]): P = builder.makeNumber(x)
+    def pickle[P](x: Float)(implicit builder: PBuilder[P]): P = builder.makeNumber(x)
   }
 
   implicit object DoublePickler extends Pickler[Double] {
-    def pickle[P](x: Double)(implicit registry: PicklerRegistry,
-        builder: PBuilder[P]): P = builder.makeNumber(x)
+    def pickle[P](x: Double)(implicit builder: PBuilder[P]): P = builder.makeNumber(x)
   }
 
   implicit object StringPickler extends Pickler[String] {
-    def pickle[P](x: String)(implicit registry: PicklerRegistry,
-        builder: PBuilder[P]): P = builder.makeString(x)
+    def pickle[P](x: String)(implicit builder: PBuilder[P]): P = builder.makeString(x)
   }
 }

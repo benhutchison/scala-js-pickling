@@ -27,7 +27,7 @@ object PicklerMaterializersImpl {
       val fieldName = accessor.name
       val fieldString = fieldName.toString()
       q"""
-        ($fieldString, registry.pickle(value.$fieldName))
+        ($fieldString, (value.$fieldName.pickle))
       """
     }
 
@@ -38,9 +38,7 @@ object PicklerMaterializersImpl {
     val result = q"""
       implicit object GenPickler extends org.scalajs.spickling.Pickler[$tpe] {
         import org.scalajs.spickling._
-        override def pickle[P](value: $tpe)(
-            implicit registry: PicklerRegistry,
-            builder: PBuilder[P]): P = $pickleLogic
+        def pickle[P](value: $tpe)(implicit builder: PBuilder[P]): P = $pickleLogic
       }
       GenPickler
     """
@@ -89,6 +87,8 @@ object PicklerMaterializersImpl {
       }
       GenUnpickler
     """
+
+    println(s"result: $result")
 
     c.Expr[Unpickler[T]](result)
   }

@@ -4,7 +4,7 @@ val commonSettings = Seq(
     normalizedName ~= { _.replace("scala-js", "scalajs") },
     homepage := Some(url("http://scala-js.org/")),
     licenses += ("BSD New", url("https://github.com/scala-js/scala-js/blob/master/LICENSE")),
-    scalaVersion := "2.10.3",
+    scalaVersion := "2.11.0-M7",
     crossScalaVersions := Seq("2.10.3", "2.11.0-M7"),
     scalacOptions ++= Seq(
         //"-deprecation", // need to use deprecated things to be compat with 2.10
@@ -36,7 +36,7 @@ lazy val root = project.in(file("."))
       publish := {},
       publishLocal := {}
   )
-  .aggregate(core, corejvm, js, playjson, tests)
+  .aggregate(core, corejvm, js, playjson, tests).dependsOn(core, playjson)
 
 lazy val core = project
   .settings(commonSettings: _*)

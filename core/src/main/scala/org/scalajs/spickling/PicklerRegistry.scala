@@ -65,6 +65,24 @@ class BasePicklerRegistry extends PicklerRegistry {
     }
   }
 
+  def spickle[P, T: ClassTag](value: T)(implicit builder: PBuilder[P],
+      registry: PicklerRegistry): P = {
+    if (value == null) {
+      builder.makeNull()
+    } else {
+      singletons.get(value) match {
+        case Some(name) => builder.makeObject(("s", builder.makeString(name)))
+        case _ =>
+          val className = implicitly[ClassTag[T]].runtimeClass.getName
+          val pickler = picklers(className)
+          val pickledValue = pickler.pickle[P](value.asInstanceOf[pickler.Picklee])
+          builder.makeObject(
+              ("t", builder.makeString(className)),
+              ("v", pickledValue))
+      }
+    }
+  }
+
   def unpickle[P](pickle: P)(implicit reader: PReader[P],
       registry: PicklerRegistry): Any = {
     if (reader.isNull(pickle)) {
